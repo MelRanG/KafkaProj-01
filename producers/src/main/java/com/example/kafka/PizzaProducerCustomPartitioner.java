@@ -14,8 +14,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-public class PizzaProducer {
-    public static final Logger logger = LoggerFactory.getLogger(PizzaProducer.class.getName());
+public class PizzaProducerCustomPartitioner {
+    public static final Logger logger = LoggerFactory.getLogger(PizzaProducerCustomPartitioner.class.getName());
     public static void sendPizzaMessage(KafkaProducer<String, String> kafkaProducer, String topicName, int iterCount, int interIntervalMillis, int intervalMillis, int intervalCount, boolean sync) {
         PizzaMessage pizzaMessage = new PizzaMessage();
         int iterSeq = 0;
@@ -89,7 +89,10 @@ public class PizzaProducer {
         //batch setting
         props.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, "32000");
         props.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20");
-
+        props.setProperty("partitioner.class", "CustomPartitioner");
+        props.setProperty(ProducerConfig.PARTITIONER_CLASS_CONFIG, "com.example.kafka,CustomerPartitioner");
+        //CustomePartitioner에서 P001을 하드코딩으로 주지 않기위해서 여기서 설정으로 넘겨줌
+        props.setProperty("custom.specialKey", "P001");
         //KafkaProducer 객체 생성
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(props);
 
